@@ -1,4 +1,48 @@
 /*! dynamicLoader v1.0.0 Copyright (c) 2013 Ugot2BkidNme(Barry A. Rader) license: https://github.com/Ugot2BkidNme/dynamicLoader/blob/master/license.txt */
+/*
+	Dynamic Loader for html elements (javascript,css,images).
+	usage:
+		To load everything: dynamicLoader.load();
+		To add images dynamicLoader.add({Images:["valid.gif","invalid.gif"]});
+			Images is the simpliest as it only will compare if the path is already present no requirements are allowed and no versioning control
+		To add style sheets dynamicLoader.add({StyleSheets:[{id:"string", source:[], media:"screen", version:"1.1.1", loadAfter:["list of dom id"s for other stylesheets"]}]});
+		To add scripts dynamicLoader.add({Scripts:{name:"jQuery",version:"1.7.1",source:"jQuery.1.7.1.min.js",identifier:"jQuery"}});
+	required parameters: name source and identifier values;
+	optional: version and required
+	name:(required) this is simply a string used to identify your file this is the value you will use to call against for the requires functionality
+		ei: "jQuery"
+	source:(required) accepts an array so you can do a
+		ei: ["//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js","/ctlimg/standard/js/lib/jquery/1.9.1.min.js"]
+	identifier:(required) this is simply a string used to identify your file you should use the name of a unique function
+		so it can be detected as it will not load if it is found
+		ei: "jQuery"
+	version:(optional) this is the version number if you load more then one version it will load the highest version sent to be loaded
+		there is a maximum of 3 places for versioning system if your doing a 1.0.1.2 your out of luck
+		note: a lower version can be loaded if you do not supply version so it is recomended you do.
+		ei:"1.9.1"
+		requires:(optional) this accepts an array of identifiers
+	//future to do requires:(optional) this accepts an array of objects
+	//	{
+	//		identifier:"string"
+	//		,minVersion:"#.#.#"
+	//		,maxVersion:"#.#.#"
+	//		,getVersion: function
+	//	}
+		using the name supplied the identifier of the object and version will be grabbed for reference
+		if there is no coressponding name the dom will be checked using the supplied name which in this case is the actual identifier.
+		note: version only works if it is loaded by the dynamicLoader otherwise it will only check based on the supplied identifier unless you supply a version check function
+		ei: single requirement no version {name:"jQuery"}
+		ei: single requirement with minVersion {name:"jQuery", minVersion:"1.7.1"}
+		ei: single requirement with minVersion and maxVersion {name:"jQuery", minVersion:"1.7.1", maxVersion:"1.9.1"}
+		ei: single requirement with minVersion and maxVersion and a function to return the current version from a DOM Call{name:"jQuery", minVersion:"1.7.1", maxVersion:"1.9.1", getVersion: function() { return jQuery.jquery; }}
+example object for loading jQuery
+{Scripts:{
+	name: "jQuery"
+	,version: "1.9.1"
+	,source: ["//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js","/ctlimg/standard/js/lib/jquery/1.9.1.min.js"]
+	,identifier: "jQuery"
+}}
+*/
 (function (window, undefined) {
 	this.dynamicLoader = function() {
 		var
@@ -484,7 +528,8 @@
 				console[type](string);
 			}
 			,setDebugMode = function(mode) {
-				Silent = mode;
+				if (mode) Silent = false;
+				else Silent = true;
 			}
 		;
 		return {
